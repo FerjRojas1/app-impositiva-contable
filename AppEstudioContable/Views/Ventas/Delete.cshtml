@@ -1,0 +1,91 @@
+﻿@model ServiciosEC.Models.Venta
+
+@{
+    ViewData["Title"] = "Eliminar Venta";
+    string cuit = ViewBag.Cuit as string;    
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-outline card-danger shadow-sm">
+            <div class="card-header bg-white border-bottom-0">
+                <h3 class="card-title text-dark font-weight-bold">
+                    <i class="fas fa-trash-alt mr-2 text-danger"></i> Confirmar Eliminación
+                </h3>
+            </div>
+
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <strong>¿Estás seguro que deseas eliminar esta venta? Esta acción es irreversible.</strong>
+                </div>
+
+                <div class="row text-muted">
+                  
+                    <div class="col-md-6 mb-3">
+                        <strong>Fecha:</strong><br />
+                        @Model.Fecha.ToShortDateString()
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <strong>Tipo Factura:</strong><br />
+                        @Model.TipoFact
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <strong>Punto de Venta:</strong><br />
+                        @Model.PuntoVenta
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <strong>Número Desde:</strong><br />
+                        @Model.NroDesde
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <strong>Gravado:</strong><br />
+                        @Model.NetoGravado?.ToString("C2", new System.Globalization.CultureInfo("es-AR"))
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <strong>IVA:</strong><br />
+                        @Model.Iva?.ToString("C2", new System.Globalization.CultureInfo("es-AR"))
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <strong class="text-dark">Total:</strong><br />
+                        <span class="font-weight-bold text-dark">@Model.Total?.ToString("C2", new System.Globalization.CultureInfo("es-AR"))</span>
+                    </div>
+                </div>
+
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="IdVenta" />
+                    <input type="hidden" name="cuit" value="@cuit" />
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" asp-route-cuit="@cuit" class="btn btn-outline-secondary btn-shine">
+                            <i class="fas fa-arrow-left mr-1"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-danger btn-shine">
+                            <i class="fas fa-trash-alt mr-1"></i> Eliminar
+                        </button>
+                    </div>
+
+                    @if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
+                    {
+                        <div class="alert alert-danger mt-3">
+                            <ul>
+                                @foreach (var modelState in ViewData.ModelState.Values)
+                                {
+                                    foreach (var error in modelState.Errors)
+                                    {
+                                        <li>@error.ErrorMessage</li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    }
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

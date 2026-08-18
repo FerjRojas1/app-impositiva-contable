@@ -1,0 +1,135 @@
+﻿@using ServiciosEC.Models
+@model AppEstudioContable.Models.UsuarioModel
+
+@{
+    ViewData["Title"] = $"Editar Usuario: {Model.nombre} {Model.apellido}"; 
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-outline card-warning">
+           
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-user-edit mr-2"></i>Editar Usuario: <strong>@Model.nombre @Model.apellido</strong></h3> @* Icono y nombre del usuario en el título *@
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <h4 class="alert-heading"><i class="fas fa-exclamation-triangle mr-2"></i>¡Se encontraron errores!</h4>
+                        <hr>
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <p class="mb-0">@error.ErrorMessage</p>
+                        }
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
+                   
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="mb-3 text-warning"><i class="fas fa-id-card mr-2"></i>Información Personal</h5>
+                            <hr class="mb-3" />
+
+                            <div class="form-group mb-3">
+                                <label asp-for="nombre" class="form-label"></label> 
+                                <input asp-for="nombre" class="form-control" />
+                                <span asp-validation-for="nombre" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label asp-for="apellido" class="form-label"></label> 
+                                <input asp-for="apellido" class="form-control" />
+                                <span asp-validation-for="apellido" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label asp-for="dni" class="form-label"></label> 
+                                <input asp-for="dni" class="form-control" type="text" inputmode="numeric" pattern="\d{7,10}" title="Ingrese un DNI válido (7 a 10 dígitos numéricos)" />
+                                <span asp-validation-for="dni" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label asp-for="telefono" class="form-label"></label> 
+                                <input asp-for="telefono" class="form-control" />
+                                <span asp-validation-for="telefono" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5 class="mb-3 text-warning"><i class="fas fa-user-cog mr-2"></i>Configuración de Cuenta</h5>
+                            <hr class="mb-3" />
+
+                            <div class="form-group mb-3">
+                                <label asp-for="nombre_usuario" class="form-label"></label> 
+                                <input asp-for="nombre_usuario" class="form-control" />
+                                <span asp-validation-for="nombre_usuario" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label asp-for="email" class="form-label"></label> 
+                                <input asp-for="email" class="form-control" type="email" />
+                                <span asp-validation-for="email" class="text-danger"></span>
+                            </div>
+
+                            <h5 class="mt-4 mb-3 text-warning"><i class="fas fa-key mr-2"></i>Cambiar Contraseña</h5>
+                            <hr class="mb-3" />
+
+                            <div class="form-group mb-3">
+                                <label asp-for="NuevaContrasenia" class="form-label"></label> 
+                                <input asp-for="NuevaContrasenia" type="password" class="form-control" autocomplete="new-password" />
+                                <span asp-validation-for="NuevaContrasenia" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label asp-for="ConfirmarContrasenia" class="form-label"></label> 
+                                <input asp-for="ConfirmarContrasenia" type="password" class="form-control" autocomplete="new-password" /> 
+                                <span asp-validation-for="ConfirmarContrasenia" class="text-danger"></span>
+                            </div>
+
+                            <h5 class="mt-4 mb-3 text-warning"><i class="fas fa-user-tag mr-2"></i>Rol del Usuario</h5>
+                            <hr class="mb-3" />
+
+                            <div class="form-group mb-4">
+                                <label asp-for="rolId" class="form-label">Rol del Sistema</label> 
+                                <select asp-for="rolId" class="form-select">
+                                    
+                                    <option value="">Seleccione un rol</option>
+                                    @foreach (var rol in Model.roles)
+                                    {
+                                        <option value="@rol.IdRol">@rol.Descripcion</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="rolId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4 border-top pt-3">
+                        <button type="submit" class="btn btn-primary btn-lg btn-shine">
+                          
+                            <i class="fas fa-save mr-1"></i> Guardar Cambios
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg btn-shine">
+                            <i class="fas fa-arrow-left mr-1"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.PartialAsync("_ValidationScriptsPartial");
+    }
+}

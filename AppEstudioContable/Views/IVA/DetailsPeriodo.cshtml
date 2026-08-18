@@ -1,0 +1,147 @@
+﻿@model ServiciosEC.Utilidades.ModelosDTO.LibroIvaModel
+
+@{
+    ViewBag.Title = "Detalle Período IVA";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string[] columnas = new[] {
+        "Grav 27%", "Grav 21%", "Grav 10,5%", "No gravado", "Exento",
+        "Iva 27%", "Iva 21%", "Iva 10,5%", "Total"
+    };
+
+    var secciones = new[] {
+        new {
+            Tipo = "Débito",
+            Color = "info",
+            Titulo = "Ventas",
+            Totales = new[] {
+                new { Titulo = "Totales Débito Fiscal", Valores = Model.TotalDebitoFiscal },
+                new { Titulo = "Total Restitución Débito Fiscal", Valores = Model.TotalRestitucionDebitoFiscal },
+                new { Titulo = "Total Neto Débito Fiscal", Valores = Model.TotalNetoDebitoFiscal }
+            }
+        },
+        new {
+            Tipo = "Crédito",
+            Color = "secondary",
+            Titulo = "Compras",
+            Totales = new[] {
+                new { Titulo = "Totales Crédito Fiscal", Valores = Model.TotalCreditoFiscal },
+                new { Titulo = "Total Restitución Crédito Fiscal", Valores = Model.TotalRestitucionCreditoFiscal },
+                new { Titulo = "Total Neto Crédito Fiscal", Valores = Model.TotalNetoCreditoFiscal }
+            }
+        }
+    };
+}
+
+<section class="content">
+    <div class="container-fluid mt-4">
+        <h2 class="text-dark text-center mb-2">Detalle del Período IVA</h2>
+        <h5 class="text-muted text-center mb-4">@Model.Cliente.Nombre — CUIT: @Model.Cuit — @Model.Mes/@Model.Año</h5>
+
+        <div class="text-right mb-3" id="no-print">
+            <a class="btn btn-outline-info btn-sm px-3 py-2" href="#" onclick="window.print();">
+                <i class="fas fa-print mr-1"></i> Imprimir
+            </a>
+        </div>
+
+        <div id="accordionSecciones">
+            @for (int i = 0; i < secciones.Length; i++)
+            {
+                var seccion = secciones[i];
+                var sectionId = $"seccion{i}";
+
+                <div class="card shadow-sm mb-4 border-left-@seccion.Color">
+                    <div class="card-header bg-@seccion.Color text-white">
+                        <h5 class="mb-0">
+                            <a class="text-white d-block" data-toggle="collapse" href="#@sectionId" role="button" aria-expanded="true" aria-controls="@sectionId">
+                                <i class="fas fa-folder-open mr-2"></i> @seccion.Titulo
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="@sectionId" class="collapse show" data-parent="#accordionSecciones">
+                        <div class="card-body bg-light">
+                            <div id="accordionTotales@i">
+                                @for (int j = 0; j < seccion.Totales.Length; j++)
+                                {
+                                    var total = seccion.Totales[j];
+                                    var totalId = $"collapse{i}_{j}";
+                                    var headerId = $"header{i}_{j}";
+
+                                    <div class="card mb-3 border border-@seccion.Color shadow-sm">
+                                        <div class="card-header bg-white" id="@headerId">
+                                            <h6 class="mb-0">
+                                                <a class="text-@seccion.Color font-weight-bold" data-toggle="collapse" href="#@totalId" aria-expanded="true" aria-controls="@totalId">
+                                                    @total.Titulo
+                                                </a>
+                                            </h6>
+                                        </div>
+                                        <div id="@totalId" class="collapse show" data-parent="#accordionTotales@i">
+                                            <div class="card-body p-3 bg-white">
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-hover table-sm text-center table-striped mb-0">
+                                                        <thead class="thead-light">
+                                                            <tr>
+                                                                @foreach (var col in columnas)
+                                                                {
+                                                                    <th>@col</th>
+                                                                }
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>@total.Valores.Neto27.ToString("C")</td>
+                                                                <td>@total.Valores.Neto21.ToString("C")</td>
+                                                                <td>@total.Valores.Neto105.ToString("C")</td>
+                                                                <td>@total.Valores.NoGravado.ToString("C")</td>
+                                                                <td>@total.Valores.Exento.ToString("C")</td>
+                                                                <td>@total.Valores.Iva27.ToString("C")</td>
+                                                                <td>@total.Valores.Iva21.ToString("C")</td>
+                                                                <td>@total.Valores.Iva105.ToString("C")</td>
+                                                                <td class="font-weight-bold">@total.Valores.TotalGeneral.ToString("C")</td>
+                                                            </tr>
+                                                            <tr class="bg-white border-top border-secondary">
+                                                                <td colspan="8" class="text-right pr-3 font-weight-bold text-uppercase">
+                                                                    <span class="badge badge-secondary p-2">Total Gravado</span>
+                                                                </td>
+                                                                <td class="bg-light font-weight-bold text-success">
+                                                                    @total.Valores.NetoGravado.ToString("C")
+                                                                </td>
+                                                            </tr>
+                                                            <tr class="bg-white border-bottom border-secondary">
+                                                                <td colspan="8" class="text-right pr-3 font-weight-bold text-uppercase">
+                                                                    <span class="badge badge-secondary p-2">Total IVA</span>
+                                                                </td>
+                                                                <td class="bg-light font-weight-bold text-danger">
+                                                                    @total.Valores.Iva.ToString("C")
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="text-center mt-4">
+            <a asp-controller="IVA"
+               asp-action="Index"
+               asp-route-cuit="@Model.Cuit"
+             class="btn btn-outline-secondary btn-sm px-4">Volver</a>
+
+            <a asp-controller="IVA" 
+            asp-action="ResumenPeriodo"             
+            asp-route-cuit="@Model.Cuit"
+            asp-route-mes="@Model.Mes"
+            asp-route-año="@Model.Año"
+            class="btn btn-outline-info btn-sm px-4">Resumen</a>
+        </div>
+    </div>
+</section>
+

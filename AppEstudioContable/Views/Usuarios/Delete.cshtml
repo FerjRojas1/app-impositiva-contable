@@ -1,0 +1,25 @@
+﻿@model ServiciosEC.Models.Usuario
+
+@{
+    ViewData["Title"] = "Eliminar Usuario";
+}
+
+<h2 class="text-center text-danger mb-4">¿Confirmás la eliminación del usuario?</h2>
+
+<div class="card mx-auto shadow-sm" style="max-width: 500px; padding: 24px; border-radius: 8px; background-color: #f9f9f9;">
+    <div class="card-body text-center">
+        <p class="text-muted mb-4">Esta acción no se puede deshacer. ¿Deseás continuar?</p>
+
+        <form asp-action="Delete" method="post" class="d-flex justify-content-between">
+            @Html.AntiForgeryToken()
+
+
+            <button type="submit" class="btn btn-outline-danger px-4 btn-shine">Sí, eliminar</button>
+            <a asp-action="Index" class="btn btn-outline-secondary px-4 btn-shine">Cancelar</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

@@ -1,0 +1,343 @@
+﻿@model List<AppEstudioContable.Models.PeriodosModel>
+@{
+    ViewBag.Title = "IVA";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="card border-0 shadow-sm bg-light mb-4">
+    <div class="card-body text-center">
+        <h5 class="mb-0 text-dark">
+            <span class="text-muted">Cliente CUIT:</span> @ViewBag.Cuit
+        </h5>
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">       
+
+        <div class="row justify-content-center mt-5">            
+            <!-- Card: Ver Período IVA -->
+            <div class="col-md-5">
+                <div class="card shadow-sm rounded border-0" style="background-color: #f8f9fa;">
+                    <div class="card-header bg-white border-bottom-0 text-center">
+                        <h5 class="mb-0 text-secondary">Período IVA </h5>                      
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="DetailsPeriodo" method="get">
+                            <input type="hidden" name="Cuit" value="@ViewBag.Cuit" />
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="Mes">Mes</label>
+                                    <input type="number" class="form-control form-control-sm" id="Mes" name="Mes" min="1" max="12" required placeholder="MM" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="Anio">Año</label>
+                                    <input type="number" class="form-control form-control-sm" id="Anio" name="año" min="2000" max="2100" required placeholder="AAAA" />
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-3">
+                                <button type="submit" class="btn btn-outline-info px-4 btn-sm">
+                                    <i class="fas fa-search me-2"></i> Ver Período
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row justify-content-center mt-4">
+
+            <!-- Card: Periodos con comprobantes cargados -->
+            <div class="col-12 col-lg-10">
+                <div class="accordion" id="accordionPeriodos">
+                    <div class="card border-0 shadow-sm rounded" style="background-color: #d0ebf9;">                      
+                        <div class="card-header border-bottom-0 bg-transparent position-relative">
+                            <h5 class="text-center text-secondary m-0">
+                                Períodos con comprobantes cargados
+                            </h5>
+                            <button class="btn btn-sm btn-outline-secondary position-absolute" style="top: 10px; right: 15px;"
+                                    type="button" data-toggle="collapse" data-target="#collapsePeriodos" aria-expanded="false" aria-controls="collapsePeriodos">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+
+                        <div id="collapsePeriodos" class="" aria-labelledby="headingPeriodos" data-parent="#accordionPeriodos">
+                            <div class="card-body">
+                                @if (Model.Any())
+                                {
+                                    <ul class="list-group list-group-flush">
+                                        @foreach (var p in Model)
+                                        {
+                                            <li class="list-group-item text-center bg-white">
+                                                <a class="text-decoration-none text-primary fw-bold"
+                                                   href="@Url.Action("DetailsPeriodo", "IVA", new { cuit = p.Cuit, año = p.Ano, mes = p.Mes })">
+                                                    @($"{p.Mes:D2}/{p.Ano} (ver detalle)")
+                                                </a>
+
+                                                @foreach (var libro in p.Libros)
+                                                {
+                                                    var json = Json.Serialize(libro);
+
+                                                    <button type="button" class="btn btn-outline-info"
+                                                            data-toggle="modal"
+                                                            data-target="#libroIvaModal"
+                                                            data-libro='@Html.Raw(json)'>
+                                                        <i class="fas fa-book text-secondary ms-2" title="Libro IVA"></i>
+                                                    </button>
+                                                }
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <p class="text-center text-muted mb-0">No hay períodos con comprobantes cargados.</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<div class="mt-4 ms-3">
+    <a asp-controller="Cliente"
+       asp-action="Details"
+       asp-route-id="@ViewBag.id"
+       class="btn btn-light border border-secondary text-muted">
+        <i class="fas fa-arrow-left me-2"></i> Volver
+    </a>
+</div>
+
+
+
+<div class="modal fade" id="libroIvaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Resumen del Libro IVA</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <!-- CARD 1: Débito Fiscal -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-dark">Débito Fiscal</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Cuadro 1 -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Total Débito Fiscal</h6>
+                                <ul class="list-group list-group-flush small">
+                                    <li class="list-group-item">Neto 27%: <span id="campoDebitoNeto27"></span></li>
+                                    <li class="list-group-item">Neto 21%: <span id="campoDebitoNeto21"></span></li>
+                                    <li class="list-group-item">Neto 10.5%: <span id="campoDebitoNeto105"></span></li>
+                                    <li class="list-group-item">IVA 27%: <span id="campoDebitoIva27"></span></li>
+                                    <li class="list-group-item">IVA 21%: <span id="campoDebitoIva21"></span></li>
+                                    <li class="list-group-item">IVA 10.5%: <span id="campoDebitoIva105"></span></li>
+                                    <li class="list-group-item">No Gravado: <span id="campoDebitoNoGravado"></span></li>
+                                    <li class="list-group-item">Exento: <span id="campoDebitoExento"></span></li>
+                                    <li class="list-group-item">Neto Otros: <span id="campoDebitoNetoOtros"></span></li>
+                                    <li class="list-group-item">IVA Otros: <span id="campoDebitoIvaOtros"></span></li>
+                                </ul>
+                            </div>
+
+                            <!-- Cuadro 2 -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Total Restitución Débito Fiscal</h6>
+                                <ul class="list-group list-group-flush small">
+                                    <li class="list-group-item">Neto 27%: <span id="campoRestDebitoNeto27"></span></li>
+                                    <li class="list-group-item">Neto 21%: <span id="campoRestDebitoNeto21"></span></li>
+                                    <li class="list-group-item">Neto 10.5%: <span id="campoRestDebitoNeto105"></span></li>
+                                    <li class="list-group-item">IVA 27%: <span id="campoRestDebitoIva27"></span></li>
+                                    <li class="list-group-item">IVA 21%: <span id="campoRestDebitoIva21"></span></li>
+                                    <li class="list-group-item">IVA 10.5%: <span id="campoRestDebitoIva105"></span></li>
+                                    <li class="list-group-item">No Gravado: <span id="campoRestDebitoNoGravado"></span></li>
+                                    <li class="list-group-item">Exento: <span id="campoRestDebitoExento"></span></li>
+                                    <li class="list-group-item">Neto Otros: <span id="campoRestDebitoNetoOtros"></span></li>
+                                    <li class="list-group-item">IVA Otros: <span id="campoRestDebitoIvaOtros"></span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 2: Crédito Fiscal -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-dark">Crédito Fiscal</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Cuadro 1 -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Total Crédito Fiscal</h6>
+                                <ul class="list-group list-group-flush small">
+                                    <li class="list-group-item">Neto 27%: <span id="campoCreditoNeto27"></span></li>
+                                    <li class="list-group-item">Neto 21%: <span id="campoCreditoNeto21"></span></li>
+                                    <li class="list-group-item">Neto 10.5%: <span id="campoCreditoNeto105"></span></li>
+                                    <li class="list-group-item">IVA 27%: <span id="campoCreditoIva27"></span></li>
+                                    <li class="list-group-item">IVA 21%: <span id="campoCreditoIva21"></span></li>
+                                    <li class="list-group-item">IVA 10.5%: <span id="campoCreditoIva105"></span></li>
+                                    <li class="list-group-item">No Gravado: <span id="campoCreditoNoGravado"></span></li>
+                                    <li class="list-group-item">Exento: <span id="campoCreditoExento"></span></li>
+                                    <li class="list-group-item">Neto Otros: <span id="campoCreditoNetoOtros"></span></li>
+                                    <li class="list-group-item">IVA Otros: <span id="campoCreditoIvaOtros"></span></li>
+                                </ul>
+                            </div>
+
+                            <!-- Cuadro 2 -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Total Restitución Crédito Fiscal</h6>
+                                <ul class="list-group list-group-flush small">
+                                    <li class="list-group-item">Neto 27%: <span id="campoRestCreditoNeto27"></span></li>
+                                    <li class="list-group-item">Neto 21%: <span id="campoRestCreditoNeto21"></span></li>
+                                    <li class="list-group-item">Neto 10.5%: <span id="campoRestCreditoNeto105"></span></li>
+                                    <li class="list-group-item">IVA 27%: <span id="campoRestCreditoIva27"></span></li>
+                                    <li class="list-group-item">IVA 21%: <span id="campoRestCreditoIva21"></span></li>
+                                    <li class="list-group-item">IVA 10.5%: <span id="campoRestCreditoIva105"></span></li>
+                                    <li class="list-group-item">No Gravado: <span id="campoRestCreditoNoGravado"></span></li>
+                                    <li class="list-group-item">Exento: <span id="campoRestCreditoExento"></span></li>
+                                    <li class="list-group-item">Neto Otros: <span id="campoRestCreditoNetoOtros"></span></li>
+                                    <li class="list-group-item">IVA Otros: <span id="campoRestCreditoIvaOtros"></span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 3: Totales -->
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0 text-dark">Resumen Técnico</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush small">
+                            <li class="list-group-item">Fecha Declaración: <span id="campoFechaDeclaracion"></span></li>
+                            <li class="list-group-item">Gravado Débito Fiscal: <span id="campoGravadoDebitoFical"></span></li>
+                            <li class="list-group-item">IVA Débito Fiscal: <span id="campoIvaDebitoFiscal"></span></li>
+                            <li class="list-group-item">Gravado Crédito Fiscal: <span id="campoGravadoCreditoFiscal"></span></li>
+                            <li class="list-group-item">IVA Crédito Fiscal: <span id="campoIvaCreditoFiscal"></span></li>
+                            <li class="list-group-item">Saldo Técnico: <span id="campoSaldoTecnico"></span></li>
+                            <li class="list-group-item">Retenciones IVA: <span id="campoRetencionesIVA"></span></li>
+                            <li class="list-group-item">Percepciones IVA: <span id="campoPercepcionesIVA"></span></li>
+                            <li class="list-group-item font-weight-bold text-primary">Saldo Técnico Neto: <span id="campoSaldoTecnicoNeto"></span></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('#libroIvaModal').on('show.bs.modal', function (event) {
+                const button = $(event.relatedTarget);
+                const libro = button.data('libro');
+                console.log("Libro:", libro);
+
+                if (!libro) return;
+
+                // Débito Fiscal
+                $('#campoDebitoNeto27').text(formatCurrency(libro.debitoNeto27));
+                $('#campoDebitoNeto21').text(formatCurrency(libro.debitoNeto21));
+                $('#campoDebitoNeto105').text(formatCurrency(libro.debitoNeto105));
+                $('#campoDebitoIva27').text(formatCurrency(libro.debitoIva27));
+                $('#campoDebitoIva21').text(formatCurrency(libro.debitoIva21));
+                $('#campoDebitoIva105').text(formatCurrency(libro.debitoIva105));
+                $('#campoDebitoNoGravado').text(formatCurrency(libro.debitoNoGravado));
+                $('#campoDebitoExento').text(formatCurrency(libro.debitoExento));
+                $('#campoDebitoNetoOtros').text(formatCurrency(libro.debitoNetoOtros));
+                $('#campoDebitoIvaOtros').text(formatCurrency(libro.debitoIvaOtros));
+
+                // Restitución Débito Fiscal
+                $('#campoRestDebitoNeto27').text(formatCurrency(libro.restDebitoNeto27));
+                $('#campoRestDebitoNeto21').text(formatCurrency(libro.restDebitoNeto21));
+                $('#campoRestDebitoNeto105').text(formatCurrency(libro.restDebitoNeto105));
+                $('#campoRestDebitoIva27').text(formatCurrency(libro.restDebitoIva27));
+                $('#campoRestDebitoIva21').text(formatCurrency(libro.restDebitoIva21));
+                $('#campoRestDebitoIva105').text(formatCurrency(libro.restDebitoIva105));
+                $('#campoRestDebitoNoGravado').text(formatCurrency(libro.restDebitoNoGravadov));
+                $('#campoRestDebitoExento').text(formatCurrency(libro.restDebitoExento));
+                $('#campoRestDebitoNetoOtros').text(formatCurrency(libro.restDebitoNetoOtros));
+                $('#campoRestDebitoIvaOtros').text(formatCurrency(libro.restDebitoIvaOtros));
+
+                // Crédito Fiscal
+                $('#campoCreditoNeto27').text(formatCurrency(libro.creditoNeto27));
+                $('#campoCreditoNeto21').text(formatCurrency(libro.creditoNeto21));
+                $('#campoCreditoNeto105').text(formatCurrency(libro.creditoNeto105));
+                $('#campoCreditoIva27').text(formatCurrency(libro.creditoIva27));
+                $('#campoCreditoIva21').text(formatCurrency(libro.creditoIva21));
+                $('#campoCreditoIva105').text(formatCurrency(libro.creditoIva105));
+                $('#campoCreditoNoGravado').text(formatCurrency(libro.creditoNoGravado));
+                $('#campoCreditoExento').text(formatCurrency(libro.creditoExento));
+                $('#campoCreditoNetoOtros').text(formatCurrency(libro.creditoNetoOtros));
+                $('#campoCreditoIvaOtros').text(formatCurrency(libro.creditoIvaOtros));
+
+                // Restitución Crédito Fiscal
+                $('#campoRestCreditoNeto27').text(formatCurrency(libro.restCreditoNeto27));
+                $('#campoRestCreditoNeto21').text(formatCurrency(libro.restCreditoNeto21));
+                $('#campoRestCreditoNeto105').text(formatCurrency(libro.restCreditoNeto105));
+                $('#campoRestCreditoIva27').text(formatCurrency(libro.restCreditoIva27));
+                $('#campoRestCreditoIva21').text(formatCurrency(libro.restCreditoIva21));
+                $('#campoRestCreditoIva105').text(formatCurrency(libro.restCreditoIva105));
+                $('#campoRestCreditoNoGravado').text(formatCurrency(libro.restCreditoNoGravado));
+                $('#campoRestCreditoExento').text(formatCurrency(libro.restCreditoExento));
+                $('#campoRestCreditoNetoOtros').text(formatCurrency(libro.restCreditoNetoOtros));
+                $('#campoRestCreditoIvaOtros').text(formatCurrency(libro.restCreditoIvaOtros));
+
+                // Resumen Técnico
+                $('#campoFechaDeclaracion').text(formatDate(libro.fechaDeclaracion));
+                $('#campoGravadoDebitoFical').text(formatCurrency(libro.gravadoDebitoFical));
+                $('#campoIvaDebitoFiscal').text(formatCurrency(libro.ivaDebitoFiscal));
+                $('#campoGravadoCreditoFiscal').text(formatCurrency(libro.gravadoCreditoFiscal));
+                $('#campoIvaCreditoFiscal').text(formatCurrency(libro.ivaCreditoFiscal));
+                $('#campoSaldoTecnico').text(formatCurrency(libro.saldoTecnico));
+                $('#campoRetencionesIVA').text(formatCurrency(libro.retencionesIVA));
+                $('#campoPercepcionesIVA').text(formatCurrency(libro.percepcionesIVA));
+                $('#campoSaldoTecnicoNeto').text(formatCurrency(libro.saldoTecnicoNeto));
+            });
+
+            // Formateo moneda ARS
+            function formatCurrency(valor) {
+                if (valor === null || valor === undefined) return '-';
+                return valor.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
+            }
+
+            // Formateo fecha (dd/mm/yyyy)
+            function formatDate(fechaStr) {
+                if (!fechaStr) return '-';
+                const fecha = new Date(fechaStr);
+                return fecha.toLocaleDateString('es-AR');
+            }
+
+        });
+    </script>
+}

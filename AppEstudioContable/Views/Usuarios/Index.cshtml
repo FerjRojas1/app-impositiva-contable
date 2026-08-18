@@ -1,0 +1,133 @@
+﻿@model IEnumerable<ServiciosEC.Models.Usuario>
+
+@{
+    ViewData["Title"] = "Gestión de Usuarios"; 
+    var successMessage = TempData["SuccessMessage"] as string;
+}
+
+<div class="bg-white border border-secondary rounded shadow-sm p-3 mb-3 text-center">
+    <h4 class="text-dark fw-bold mb-0">
+        <i class="fas fa-users me-2"></i> Gestión de Usuarios
+    </h4>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-primary card-outline">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title">Usuarios del Sistema</h3>
+                
+                    <a asp-action="Create" class="btn btn-success btn-sm btn-shine">
+                        <i class="fas fa-plus"></i> Crear Nuevo Usuario
+                    </a>
+                    <a asp-action="VerInactivos" class="btn btn-warning btn-sm btn-shine">
+                        <i class="fas fa-plus"></i> Ver Usuarios Inactivos
+                    </a>
+                
+            </div>
+
+            <div class="card-body">
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                       
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <div>@TempData["Error"]</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> 
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(successMessage))
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i> @successMessage
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+@* 
+                <div class="row mb-3">
+                    
+                    <div class="col-md-6 offset-md-3">
+                        
+                        <div class="input-group">
+                            <input type="text" name="filtro" id="buscarUsuario" class="form-control" placeholder="Buscar usuario por nombre, email o DNI..." aria-label="Buscar usuario"> 
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" id="btnBuscar">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div> *@
+
+                <div class="table-responsive">
+                    <table id="usuariosTable" class="table table-hover table-bordered align-middle dataTable no-footer" role="grid">
+                      
+                        <thead class="table-light text-center">
+                            <tr>
+                                <th>Id</th>
+                                <th>Nombre de Usuario</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th class="text-center">Acciones</th> 
+                            </tr>
+                        </thead>
+                        <tbody id="lista-usuarios">
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="text-center">@item.IdPersona</td>
+                                    <td>@item.NombreUsuario</td>
+                                    <td>@item.Email</td>
+                                    <td>@item.Rol.Descripcion</td>
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-sm" role="group" aria-label="Acciones de usuario">
+                                            
+                                            <a asp-action="Edit" asp-route-id="@item.IdPersona" class="btn btn-outline-warning btn-shine" title="Editar">
+                                               
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Details" asp-route-id="@item.IdPersona" class="btn btn-outline-info btn-shine" title="Detalles">
+                                                <i class="fas fa-info-circle"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.IdPersona" class="btn btn-outline-danger btn-shine" title="Eliminar">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (!Model.Any())
+                {
+                    <div class="alert alert-warning mt-3" role="alert">
+                        <i class="fas fa-user-slash me-2"></i> No se encontraron usuarios registrados.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/BuscarUsuario.js"></script>
+    <script>
+        let usuariosTable = new DataTable('#usuariosTable');
+    </script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.min.css" />
+    <script type="text/javascript" src="https://cdn.datatables.net/2.0.0/js/dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            
+        });
+    </script>
+}

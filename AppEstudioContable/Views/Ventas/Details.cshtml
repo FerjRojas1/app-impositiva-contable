@@ -1,0 +1,152 @@
+﻿@model AppEstudioContable.Models.VentaModel
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Detalle de Venta";
+    var cultura = new CultureInfo("es-AR");
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-outline card-secondary shadow-sm">
+            <div class="card-header bg-white border-bottom-0">
+                <h3 class="card-title text-dark font-weight-bold">
+                    <i class="fas fa-file-alt mr-2 text-secondary"></i> Detalle de Venta
+                </h3>
+            </div>
+
+            <div class="card-body">
+
+                <!-- Datos generales -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="text-muted">Fecha</label>
+                        <p class="form-control-plaintext">@Model.Fecha.ToShortDateString()</p>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="text-muted">Tipo Comprobante</label>
+                        <p class="form-control-plaintext">@Model.TipoFact</p>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="text-muted">Punto de Venta</label>
+                        <p class="form-control-plaintext">@Model.PuntoVenta</p>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="text-muted">Desde - Hasta</label>
+                        <p class="form-control-plaintext">@Model.NroDesde - @Model.NroHasta</p>
+                    </div>
+                </div>
+
+                <!-- Comprador -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="text-muted">Tipo Doc.</label>
+                        <p class="form-control-plaintext">@Model.TipoDocComprador</p>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="text-muted">Nro Doc.</label>
+                        <p class="form-control-plaintext">@Model.NroDocComprador</p>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="text-muted">Denominación</label>
+                        <p class="form-control-plaintext">@Model.DenomComprador</p>
+                    </div>
+                </div>
+
+                <!-- Moneda y tipo cambio -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="text-muted">Tipo de Cambio</label>
+                        <p class="form-control-plaintext">@Model.TipoCambio</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted">Moneda</label>
+                        <p class="form-control-plaintext">@Model.Moneda</p>
+                    </div>
+                </div>
+
+                <!-- Cuadriculado Gravados + IVA -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm text-center mt-4">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Alícuota</th>
+                                <th>Gravado</th>
+                                <th>IVA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>0%</td>
+                                <td>@Model.Grav0?.ToString("C", cultura)</td>
+                                <td>@Model.Iva0?.ToString("C", cultura)</td>
+                            </tr>
+                            <tr>
+                                <td>5%</td>
+                                <td>@Model.Grav5?.ToString("C", cultura)</td>
+                                <td>@Model.Iva5?.ToString("C", cultura)</td>
+                            </tr>
+                            <tr>
+                                <td>10.5%</td>
+                                <td>@Model.Grav105?.ToString("C", cultura)</td>
+                                <td>@Model.Iva105?.ToString("C", cultura)</td>
+                            </tr>
+                            <tr>
+                                <td>21%</td>
+                                <td>@Model.Grav21?.ToString("C", cultura)</td>
+                                <td>@Model.Iva21?.ToString("C", cultura)</td>
+                            </tr>
+                            <tr>
+                                <td>25%</td>
+                                <td>@Model.Grav25?.ToString("C", cultura)</td>
+                                <td>@Model.Iva25?.ToString("C", cultura)</td>
+                            </tr>
+                            <tr>
+                                <td>27%</td>
+                                <td>@Model.Grav27?.ToString("C", cultura)</td>
+                                <td>@Model.Iva27?.ToString("C", cultura)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Subtotales -->
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        <label class="text-muted">Neto Gravado</label>
+                        <p class="form-control-plaintext">@Model.NetoGravado?.ToString("C", cultura)</p>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="text-muted">No Gravado</label>
+                        <p class="form-control-plaintext">@Model.NoGravado?.ToString("C", cultura)</p>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="text-muted">Exento</label>
+                        <p class="form-control-plaintext">@Model.Exento?.ToString("C", cultura)</p>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="text-muted">IVA Total</label>
+                        <p class="form-control-plaintext">@Model.Iva?.ToString("C", cultura)</p>
+                    </div>
+                </div>
+
+                <!-- Total -->
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <label class="text-muted font-weight-bold">Total Venta</label>
+                        <p class="form-control-plaintext font-weight-bold h5">@Model?.Total?.ToString("C", cultura)</p>
+                    </div>
+                </div>
+
+                <!-- Botón volver -->
+                <div class="mt-2">
+                    <a asp-action="Index" asp-route-cuit="@ViewBag.Cuit" class="btn btn-outline-secondary btn-shine">
+                        <i class="fas fa-arrow-left mr-1"></i> Volver
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+

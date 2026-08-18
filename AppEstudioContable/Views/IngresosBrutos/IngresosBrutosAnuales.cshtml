@@ -1,0 +1,405 @@
+﻿@model AppEstudioContable.Models.IngresosBrutosAnualesModel
+
+@{
+    ViewData["Title"] = "Ingresos Brutos Anuales";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Titulo -->
+<div class="border border-secondary rounded shadow-sm p-3 mb-4">
+    <h1 class="h4 mb-0 text-dark fw-bold">Ingresos Brutos Anuales</h1>
+</div>
+
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+            <div class="card border-info mb-4">
+                <div class="card-header bg-info text-white">
+                    Buscar por Año
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("IngresosBrutosAnuales", "IngresosBrutos", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.id)
+
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Anio, "Año")
+                            @Html.TextBoxFor(m => m.Anio, new
+                            {
+                                @class = "form-control",
+                                                type = "number",
+                                                min = "0",
+                                                max = "3000",
+                                                step = "1"
+                                                })
+                        @Html.ValidationMessageFor(m => m.Anio)
+                    </div>
+
+                    <button type="submit" class="btn btn-info btn-shine w-100">Buscar</button>
+                                        }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show animate__animated animate__fadeIn" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+}
+
+@if (Model.Anio != null)
+{
+    if (Model.listaAnual.Any())
+    {
+        
+        @* Tabla combinada para exportacion *@
+        <br />
+        <hr class="my-4" />
+        <table id="tablaCombinada" style="display:none;">
+            <thead></thead>
+            <tbody></tbody>
+        </table>
+        <hr class="my-4" />
+        <br />
+
+
+
+        @* lista de registros del año *@
+
+        <div class="card border-primary mb-4">
+            
+            <div class="card-header bg-warning text-dark">
+                Detalles Mensuales - Año @Model.Anio
+            </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table id="listaAnual" class="table table-striped table-bordered mb-0">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Año</th>
+                                    <th>Periodo</th>
+                                    <th>Jurisdiccion</th>
+                                    <th>Coeficiente</th>
+                                    <th>Gravado Pais</th>
+                                    <th>Gravado Jurisdiccion</th>
+                                    <th>Alicuota</th>
+                                    <th>Impuesto Determinado</th>
+                                    <th>Retenciones</th>
+                                    <th>Retenciones Bancarias</th>
+                                    <th>Percepciones</th>
+                                    <th>Aduaneras</th>
+                                    <th>Saldo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.listaAnual)
+                                {
+                                <tr>
+                                    <td>@item.Anio</td>
+                                    <td>@item.Periodo</td>
+                                    <td>@item.JurisdiccionId</td>
+                                    <td>@item.Coeficiente</td>
+                                    <td>@((item.GravadoPais ?? 0).ToString("C2"))</td>
+                                    <td>@((item.GravadoJurisdiccion ?? 0).ToString("C2"))</td>
+                                    <td>@item.Alicuota</td>
+                                    <td>@((item.ImpuestoDeterminado ?? 0).ToString("C2"))</td>
+                                    <td>@((item.Retenciones ?? 0).ToString("C2"))</td>
+                                    <td>@((item.RetencionesBancarias ?? 0).ToString("C2"))</td>
+                                    <td>@((item.Percepciones ?? 0).ToString("C2"))</td>
+                                    <td>@((item.Aduaneras ?? 0).ToString("C2"))</td>
+                                    <td>@((item.Saldo ?? 0).ToString("C2"))</td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+        </div>
+
+        <br />
+        <hr class="my-4" />
+        <br />
+
+        @* Resumen Totales mensuales de todo el año *@
+        <div class="card border-primary mb-4">
+            <div class="card-header bg-success text-white">
+                Totales Mensuales - Año @Model.Anio
+            </div>            
+                 <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table id="totalesMensuales" class="table table-bordered mb-0">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Año</th>
+                                    <th>Periodo</th>
+                                    <th>Jurisdiccion</th>
+                                    <th>Coeficiente</th>
+                                    <th>Gravado Pais</th>
+                                    <th>Gravado Jurisdiccion</th>
+                                    <th>Alicuota</th>
+                                    <th>Impuesto Determinado</th>
+                                    <th>Retenciones</th>
+                                    <th>Retenciones Bancarias</th>
+                                    <th>Percepciones</th>
+                                    <th>Aduaneras</th>
+                                    <th>Saldo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.listaIbTotalesPorMes)
+                                {
+                                <tr>
+                                    <td>@item.Anio</td>
+                                    <td>@item.Periodo</td>
+                                    <td>@item.JurisdiccionId</td>
+                                    <td>@item.Coeficiente</td>
+                                    <td>@((item.GravadoPais ?? 0).ToString("C2"))</td>
+                                    <td>@((item.GravadoJurisdiccion ?? 0).ToString("C2"))</td>
+                                    <td>@item.Alicuota</td>
+                                    <td>@((item.ImpuestoDeterminado ?? 0).ToString("C2"))</td>
+                                    <td>@((item.Retenciones ?? 0).ToString("C2"))</td>
+                                    <td>@((item.RetencionesBancarias ?? 0).ToString("C2"))</td>
+                                    <td>@((item.Percepciones ?? 0).ToString("C2"))</td>
+                                    <td>@((item.Aduaneras ?? 0).ToString("C2"))</td>
+                                    <td>@((item.Saldo ?? 0).ToString("C2"))</td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+        </div>
+        
+
+        <br />
+        <hr class="my-4" />
+        <br />
+        @* Resumen Total del año *@
+        <div class="card border-primary mb-4">
+            <div class="card-header bg-danger text-white">
+                Resumen Total - Año @Model.Anio
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table id="totalAnual" class="table table-bordered mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Año</th>
+                                <th>Periodo</th>
+                                <th>Jurisdiccion</th>
+                                <th>Coeficiente</th>
+                                <th>Gravado Pais</th>
+                                <th>Gravado Jurisdiccion</th>
+                                <th>Alicuota</th>
+                                <th>Impuesto Determinado</th>
+                                <th>Retenciones</th>
+                                <th>Retenciones Bancarias</th>
+                                <th>Percepciones</th>
+                                <th>Aduaneras</th>
+                                <th>Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@Model.ResumenAnual.Anio</td>
+                                <td>@Model.ResumenAnual.Periodo</td>
+                                <td>@Model.ResumenAnual.JurisdiccionId</td>
+                                <td>@Model.ResumenAnual.Coeficiente</td>
+                                <td>@((Model.ResumenAnual.GravadoPais ?? 0).ToString("C2"))</td>
+                                <td>@((Model.ResumenAnual.GravadoJurisdiccion ?? 0).ToString("C2"))</td>
+                                <td>@Model.ResumenAnual.Alicuota</td>
+                                <td>@((Model.ResumenAnual.ImpuestoDeterminado ?? 0).ToString("C2"))</td>
+                                <td>@((Model.ResumenAnual.Retenciones ?? 0).ToString("C2"))</td>
+                                <td>@((Model.ResumenAnual.RetencionesBancarias ?? 0).ToString("C2"))</td>
+                                <td>@((Model.ResumenAnual.Percepciones ?? 0).ToString("C2"))</td>
+                                <td>@((Model.ResumenAnual.Aduaneras ?? 0).ToString("C2"))</td>
+                                <td>@((Model.ResumenAnual.Saldo ?? 0).ToString("C2"))</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info mt-4">
+            No se encontraron ingresos brutos registrados para el año <strong>@Model.Anio</strong>.
+        </div>
+    }
+}
+
+
+<div class="mt-4 ms-3">
+     <button type="button" onclick="window.history.back()" class="btn btn-outline-secondary btn-shine">
+        <i class="fas fa-arrow-left"></i> Volver
+    </button>
+</div>
+
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('#listaAnual').DataTable();
+            $('#totalesMensuales').DataTable({
+                paging: false,
+                searching: false,
+                ordering: false,
+                info: false,
+                
+            });
+            $('#totalAnual').DataTable({
+                paging: false,
+                searching: false,
+                ordering: false,
+                info: false,
+                
+            });
+
+            const tablaCombinada = $('#tablaCombinada').DataTable({
+                dom: 'Bfrtip',
+                buttons: ['copy', 'excelHtml5',
+                            {
+                                extend: 'pdfHtml5',
+                                pageSize: 'A4',
+                                customize: function (doc) {
+                                    doc.defaultStyle.fontSize = 6;
+                                    doc.styles.tableHeader.fontSize = 7;
+                                }
+                            },
+                        'print'],
+                paging: false,
+                searching: false,
+                ordering: false,
+                info: false,
+                columns: [
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                ]
+            });
+
+            
+            tablaCombinada.clear();
+
+            function agregarNombreDeTabla(texto) {
+                tablaCombinada.row.add([texto, '', '', '', '', '', '', '', '', '', '', '', '']);
+            }
+
+            function agregarEncabezado(encabezados) {
+                tablaCombinada.row.add(encabezados);
+            }
+
+            // ---------- lista de registros del año----------
+            agregarNombreDeTabla('Registros del Año');
+            agregarEncabezado(['Año', 'Periodo', 'Jurisdiccion','Coeficiente', 'Gravado Pais',
+                'Gravado Jurisdiccion', 'Alicuota', 'Impuesto Determinado', 'Retenciones',
+                'Retenciones Bancarias', 'Percepciones', 'Aduaneras', 'Saldo']);
+
+
+            $('#listaAnual tbody tr').each(function () {
+                const _anio = $(this).find('td:eq(0)').text();
+                const _periodo = $(this).find('td:eq(1)').text();
+                const _jurisdiccion = $(this).find('td:eq(2)').text();
+                const _coeficiente = $(this).find('td:eq(3)').text();
+                const _gravadoPais = $(this).find('td:eq(4)').text();
+                const _gravadoJurisdiccion = $(this).find('td:eq(5)').text();
+                const _alicuota = $(this).find('td:eq(6)').text();
+                const _impDeterminado = $(this).find('td:eq(7)').text();
+                const _retenciones = $(this).find('td:eq(8)').text();
+                const _retencionesBancarias = $(this).find('td:eq(9)').text();
+                const _percepciones = $(this).find('td:eq(10)').text();
+                const _aduaneras = $(this).find('td:eq(11)').text();
+                const _saldo = $(this).find('td:eq(12)').text();
+                tablaCombinada.row.add([_anio, _periodo, _jurisdiccion, _coeficiente, _gravadoPais, 
+                    _gravadoJurisdiccion, _alicuota, _impDeterminado, _retenciones ,
+                    _retencionesBancarias, _percepciones, _aduaneras, _saldo]);
+            });
+
+            tablaCombinada.row.add(['', '', '', '', '', '', '', '', '', '', '', '', '']);
+            tablaCombinada.row.add(['', '', '', '', '', '', '', '', '', '', '', '', '']);
+
+            
+            
+            // ---------- Totales Mensuales ----------
+            agregarNombreDeTabla('Totales Mensuales');
+            agregarEncabezado(['Año', 'Periodo', 'Jurisdiccion','Coeficiente', 'Gravado Pais',
+                'Gravado Jurisdiccion', 'Alicuota', 'Impuesto Determinado', 'Retenciones',
+                'Retenciones Bancarias', 'Percepciones', 'Aduaneras', 'Saldo']);
+
+
+            $('#totalesMensuales tbody tr').each(function () {
+                const _anio = $(this).find('td:eq(0)').text();
+                const _periodo = $(this).find('td:eq(1)').text();
+                const _jurisdiccion = $(this).find('td:eq(2)').text();
+                const _coeficiente = $(this).find('td:eq(3)').text();
+                const _gravadoPais = $(this).find('td:eq(4)').text();
+                const _gravadoJurisdiccion = $(this).find('td:eq(5)').text();
+                const _alicuota = $(this).find('td:eq(6)').text();
+                const _impDeterminado = $(this).find('td:eq(7)').text();
+                const _retenciones = $(this).find('td:eq(8)').text();
+                const _retencionesBancarias = $(this).find('td:eq(9)').text();
+                const _percepciones = $(this).find('td:eq(10)').text();
+                const _aduaneras = $(this).find('td:eq(11)').text();
+                const _saldo = $(this).find('td:eq(12)').text();
+                tablaCombinada.row.add([_anio, _periodo, _jurisdiccion, _coeficiente, _gravadoPais, 
+                    _gravadoJurisdiccion, _alicuota, _impDeterminado, _retenciones ,
+                    _retencionesBancarias, _percepciones, _aduaneras, _saldo]);
+            });
+
+            tablaCombinada.row.add(['', '', '', '', '', '', '', '', '', '', '', '', '']);
+            tablaCombinada.row.add(['', '', '', '', '', '', '', '', '', '', '', '', '']);
+
+            
+            
+            // ---------- Total Anual ----------
+            agregarNombreDeTabla('Total Anual');
+            agregarEncabezado(['Año', 'Periodo', 'Jurisdiccion','Coeficiente', 'Gravado Pais',
+                'Gravado Jurisdiccion', 'Alicuota', 'Impuesto Determinado', 'Retenciones',
+                'Retenciones Bancarias', 'Percepciones', 'Aduaneras', 'Saldo']);
+
+
+            $('#totalAnual tbody tr').each(function () {
+                const _anio = $(this).find('td:eq(0)').text();
+                const _periodo = $(this).find('td:eq(1)').text();
+                const _jurisdiccion = $(this).find('td:eq(2)').text();
+                const _coeficiente = $(this).find('td:eq(3)').text();
+                const _gravadoPais = $(this).find('td:eq(4)').text();
+                const _gravadoJurisdiccion = $(this).find('td:eq(5)').text();
+                const _alicuota = $(this).find('td:eq(6)').text();
+                const _impDeterminado = $(this).find('td:eq(7)').text();
+                const _retenciones = $(this).find('td:eq(8)').text();
+                const _retencionesBancarias = $(this).find('td:eq(9)').text();
+                const _percepciones = $(this).find('td:eq(10)').text();
+                const _aduaneras = $(this).find('td:eq(11)').text();
+                const _saldo = $(this).find('td:eq(12)').text();
+                tablaCombinada.row.add([_anio, _periodo, _jurisdiccion, _coeficiente, _gravadoPais, 
+                    _gravadoJurisdiccion, _alicuota, _impDeterminado, _retenciones ,
+                    _retencionesBancarias, _percepciones, _aduaneras, _saldo]);
+            });
+
+            
+            tablaCombinada.draw();
+        });
+    </script>
+
+
+}

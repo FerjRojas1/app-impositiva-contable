@@ -1,0 +1,45 @@
+﻿@model ClienteModel
+
+
+<nav class="main-header navbar navbar-expand navbar-light bg-white shadow-sm py-2 mi-navbar-cliente">
+    <ul class="navbar-nav">
+
+        <!-- Impuestos -->
+        <li class="nav-item dropdown">
+            <a id="ImpuestosDropdown" href="#" class="nav-link dropdown-toggle text-dark fw-semibold"
+               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Impuestos
+            </a>
+            <div class="dropdown-menu dropdown-menu-animate shadow-sm rounded border-0" aria-labelledby="ImpuestosDropdown">
+                <a class="dropdown-item" asp-controller="IngresosBrutos" asp-action="IngresosBrutos" asp-route-id="@Model.id">Ingresos Brutos</a>
+                <a class="dropdown-item" asp-controller="IVA" asp-action="Index" asp-route-cuit="@Model.Cuit">IVA</a>
+                <a class="dropdown-item" asp-controller="Ganancias" asp-action="Index" asp-route-cuit="@Model.Cuit">Ganancias</a>
+            </div>
+        </li>
+
+        <!-- Ventas -->
+        <li class="nav-item dropdown">
+            <a id="VentasDropdown" href="#" class="nav-link dropdown-toggle text-dark fw-semibold"
+               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Ventas
+            </a>
+            <div class="dropdown-menu dropdown-menu-animate shadow-sm rounded border-0" aria-labelledby="VentasDropdown">
+                <a class="dropdown-item" asp-controller="Ventas" asp-action="Index" asp-route-cuit="@Model.Cuit">Ver</a>
+                <a class="dropdown-item" asp-controller="Ventas" asp-action="Altas" asp-route-id="@Model.id">Cargar</a>
+            </div>
+        </li>
+
+        <!-- Compras -->
+        <li class="nav-item dropdown">
+            <a id="ComprasDropdown" href="#" class="nav-link dropdown-toggle text-dark fw-semibold"
+               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Compras
+            </a>
+            <div class="dropdown-menu dropdown-menu-animate shadow-sm rounded border-0" aria-labelledby="ComprasDropdown">
+                <a class="dropdown-item" asp-controller="Compras" asp-action="Index" asp-route-cuit="@Model.Cuit">Ver</a>
+                <a class="dropdown-item" asp-controller="Compras" asp-action="Altas" asp-route-id="@Model.id">Cargar</a>
+            </div>
+        </li>
+
+    </ul>
+</nav>

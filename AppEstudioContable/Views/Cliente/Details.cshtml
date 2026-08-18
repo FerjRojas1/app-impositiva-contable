@@ -1,0 +1,201 @@
+﻿@model AppEstudioContable.Models.ClienteModel
+
+@{
+    ViewData["Title"] = $"{Model.Nombre} {Model.Apellido}";
+
+}
+
+
+@section ClienteNavbar {
+    @Html.Partial("_NavbarCliente")
+}
+
+
+<section class="content">
+    <div class="container-fluid">
+
+        
+            <div class="card collapsed-card card-outline card-info shadow-sm border-0 rounded-3 mb-4">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-user-circle mr-2"></i>
+                        Datos del Cliente:
+                        <strong>@Model.Nombre @Model.Apellido</strong>
+                    </h2>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+            </div>
+        
+            <div class="card-body">
+                <div class="row">
+                    
+                    <div class="col-md-6">
+                        <h5 class="mb-3 text-info"><i class="fas fa-info-circle mr-2"></i>Información General</h5>
+                        <hr />
+                        <dl class="row">
+                            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Cuit)</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Cuit)</dd>
+
+                            @* <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Dni)</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Dni)</dd> *@
+
+                            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.RazonSocial)</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.RazonSocial)</dd>
+
+                            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Fecha)</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.Fecha)</dd>
+                        </dl>
+                    </div>
+
+                    
+                    <div class="col-md-6">
+                        <h5 class="mb-3 text-info"><i class="fas fa-map-marker-alt mr-2"></i>Dirección y Contacto</h5>
+                        <hr />
+                        <dl class="row">
+                            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.DomFiscal)</dt>
+                            <dd class="col-sm-8">@Html.DisplayFor(model => model.DomFiscal)</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Edit" asp-route-id="@Model.id" class="btn btn-outline-dark btn-shine">
+                        <i class="fas fa-edit mr-1"></i> 
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@Model.id" class="btn btn-danger btn-sm btn-shine">
+                            <i class="fas fa-trash-alt"></i>                       
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-outline card-secondary">
+                <div class="card shadow-sm border-0 rounded-3 mb-4">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
+                        <h5 class="mb-0 text-muted fw-semibold">Compras / Ventas</h5>
+                    <select id="anioSelect" class="form-select form-select-sm w-auto" style="min-width: 100px;">
+                    </select>
+                    </div>
+                    <div class="card-body p-3">
+                        <canvas id="barChart" style="height:300px; min-height:300px;"></canvas>
+                    </div>
+            </div>
+        </div>
+        
+        <div class="mt-2">
+            <a asp-action="Index" class="btn btn-secondary btn-shine">
+                Volver
+            </a>
+        </div>
+
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(function () {
+           
+            function cargarDatosGrafica(idCliente, ano) {
+              
+                $.ajax({
+                    url: '@Url.Action("ObtenerDatosGraficaVentasCompras", "Cliente")',
+                    type: 'GET',
+                    data: { idCliente: idCliente, ano: ano },
+                    success: function (response) {
+                        if (response.success) {
+                            
+                            barChartData.datasets[0].data = response.compras;
+                            barChartData.datasets[1].data = response.ventas;
+                            barChart.update(); 
+                        } else {
+                            console.error("Error al obtener datos de la gráfica:", response.message);
+                       
+                            alert("No se pudieron cargar los datos de la gráfica: " + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error en la llamada AJAX:", error);
+                        alert("Ocurrió un error al cargar los datos de la gráfica.");
+                    }
+                });
+            }
+
+            var barChartCanvas = $('#barChart').get(0).getContext('2d');
+
+        
+            var barChartData = {
+                labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                datasets: [
+                    {
+                        label: 'Compras',
+                        backgroundColor: 'rgba(108, 117, 125, 0.8)',
+                        borderColor: 'rgba(108, 117, 125, 1)',
+                        data: [], 
+                        pointRadius: false,
+                        pointColor: 'rgba(210, 214, 222, 1)',
+                        pointStrokeColor: '#c1c7d1',
+                        pointHighlightFill: '#fff',
+                        pointHighlightStroke: 'rgba(220,220,220,1)'
+                    },
+                    {
+                        label: 'Ventas',
+                        backgroundColor: 'rgba(13, 202, 240, 0.8)',
+                        borderColor: 'rgba(13, 202, 240, 1)',
+                        data: [], 
+                        pointRadius: false,
+                        pointColor: '#3b8bba',
+                        pointStrokeColor: 'rgba(60,141,188,1)',
+                        pointHighlightFill: '#fff',
+                        pointHighlightStroke: 'rgba(60,141,188,1)'
+                    }
+                ]
+            };
+
+            var barChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                datasetFill: false,
+                scales: { 
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            };
+
+     
+            var barChart = new Chart(barChartCanvas, {
+                type: 'bar',
+                data: barChartData,
+                options: barChartOptions
+            });
+
+            
+            var clienteId = @Model.id;
+
+            
+            var anoActual = new Date().getFullYear();
+
+            
+            var anioSelect = $('#anioSelect');
+            var currentYear = new Date().getFullYear();
+            for (var i = currentYear + 1; i >= currentYear - 5; i--) { 
+                var selected = (i === anoActual) ? 'selected' : '';
+                anioSelect.append(`<option value="${i}" ${selected}>${i}</option>`);
+            }
+
+            
+            cargarDatosGrafica(clienteId, anoActual);
+
+           
+            anioSelect.on('change', function () {
+                var selectedAno = $(this).val();
+                cargarDatosGrafica(clienteId, selectedAno);
+            });
+        });
+    </script>
+}

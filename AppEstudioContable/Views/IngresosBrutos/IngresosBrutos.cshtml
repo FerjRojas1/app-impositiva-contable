@@ -1,0 +1,195 @@
+﻿@model AppEstudioContable.Models.IngresosBrutosModel
+
+@{
+    ViewData["Title"] = "Ingresos Brutos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Titulo -->
+
+<div class="bg-light border border-secondary rounded shadow-sm p-3 mb-4 text-center">
+    <h1 class="h4 mb-0 text-dark fw-bold">Ingresos Brutos</h1>
+</div>
+
+
+<!-- Botones centrados -->
+<div class="d-flex justify-content-center mb-4">
+    <a class="btn btn-secondary mr-2 btn-shine" asp-controller="IngresosBrutos" asp-action="IngresosBrutosMensuales" asp-route-id="@Model.id">
+        Ver Mensuales
+    </a>
+    <a class="btn btn-secondary btn-shine" asp-controller="IngresosBrutos" asp-action="IngresosBrutosAnuales" asp-route-id="@Model.id">
+        Ver Anuales
+    </a>
+</div>
+
+
+<!-- Cuit -->
+<div class="card border-0 shadow-sm bg-light mb-4">
+    <div class="card-body">
+        <h5 class="mb-0 text-dark">
+            <span class="text-muted">Cliente CUIT:</span> @ViewBag.Cuit
+        </h5>
+    </div>
+</div>
+
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show animate__animated animate__fadeIn" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show animate__animated animate__fadeIn" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+}
+
+<div class="card border border-info shadow-sm rounded">
+    <div class="card-header bg-info text-white rounded-top">
+        <h4 class="card-title mb-0">Generar DDJJ</h4>
+    </div>
+    <div class="card-body bg-light">
+        @using (Html.BeginForm("IngresosBrutos", "IngresosBrutos", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.id)
+
+            <div class="form-row">
+                <div class="form-group col-12 col-md-6">
+                    <label for="JurisdiccionId" class="text-dark fw-bold">Jurisdicción</label>
+                    @Html.DropDownListFor(m => m.JurisdiccionId,
+                    (IEnumerable<SelectListItem>)ViewBag.Jurisdicciones,
+                                "-- Selecciona una jurisdicción --",
+                                new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.JurisdiccionId)
+            </div>
+
+            <div class="form-group col-12 col-md-6">
+                <label for="Periodo" class="text-dark fw-bold">Periodo</label>
+                @Html.DropDownListFor(m => m.Periodo,
+                                (IEnumerable<SelectListItem>)ViewBag.Periodos,
+                                "-- Selecciona un mes --",
+                                new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Periodo)
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-12 col-sm-6 col-md-4">
+                <label for="Anio" class="text-dark fw-bold">Año</label>
+                @Html.TextBoxFor(m => m.Anio, new
+                                {
+                        @class = "form-control",
+                                type = "number",
+                                min = "1",
+                                step = "1"
+                                })
+                @Html.ValidationMessageFor(m => m.Anio)
+            </div>
+
+            <div class="form-group col-12 col-sm-6 col-md-4">
+                <label for="Coeficiente" class="text-dark fw-bold">Coeficiente</label>
+                @Html.TextBoxFor(m => m.Coeficiente, new
+                                {
+                        @class = "form-control",
+                                type = "number",
+                                min = "0",
+                                max = "1",
+                                step = "0.00001"
+                                })
+                @Html.ValidationMessageFor(m => m.Coeficiente)
+            </div>
+
+            <div class="form-group col-12 col-sm-6 col-md-4">
+                <label for="Alicuota" class="text-dark fw-bold">Alicuota</label>
+                @Html.TextBoxFor(m => m.Alicuota, new
+                                {
+                        @class = "form-control",
+                                type = "number",
+                                min = "0",
+                                max = "15",
+                                step = "0.0001"
+                                })
+                @Html.ValidationMessageFor(m => m.Alicuota)
+            </div>
+        </div>
+
+        <h5 class="mt-4">Deducciones</h5>
+        <hr />
+
+        <div class="form-row">
+            <div class="form-group col-12 col-md-6">
+                <label for="Retenciones" class="text-dark fw-bold">Retenciones</label>
+                @Html.TextBoxFor(m => m.Retenciones, new
+                                {
+                        @class = "form-control",
+                                type = "number",
+                                min = "0",
+                                step = "0.01"
+                                })
+                @Html.ValidationMessageFor(m => m.Retenciones)
+            </div>
+
+            <div class="form-group col-12 col-md-6">
+                <label for="RetencionesBancarias" class="text-dark fw-bold">Retenciones Bancarias</label>
+                @Html.TextBoxFor(m => m.RetencionesBancarias, new
+                                {
+                        @class = "form-control",
+                                type = "number",
+                                min = "0",
+                                step = "0.01"
+                                })
+                @Html.ValidationMessageFor(m => m.RetencionesBancarias)
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-12 col-md-6">
+                <label for="Percepciones" class="text-dark fw-bold">Percepciones</label>
+                @Html.TextBoxFor(m => m.Percepciones, new
+                                {
+                        @class = "form-control",
+                                type = "number",
+                                min = "0",
+                                step = "0.01"
+                                })
+                @Html.ValidationMessageFor(m => m.Percepciones)
+            </div>
+
+            <div class="form-group col-12 col-md-6">
+                <label for="Aduaneras" class="text-dark fw-bold">Aduaneras</label>
+                @Html.TextBoxFor(m => m.Aduaneras, new
+                                {
+                        @class = "form-control",
+                                type = "number",
+                                min = "0",
+                                step = "0.01"
+                                })
+                @Html.ValidationMessageFor(m => m.Aduaneras)
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-info px-4 btn-shine">Enviar</button>
+        </div>
+                }
+    </div>
+</div>
+
+
+<div class="mt-4 ms-3">
+    <button type="button" onclick="window.history.back()" class="btn btn-outline-secondary btn-shine">
+        <i class="fas fa-arrow-left"></i> Volver
+    </button>
+</div>
+
+
+
+

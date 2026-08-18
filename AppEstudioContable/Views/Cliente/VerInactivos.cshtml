@@ -1,0 +1,67 @@
+﻿@model IEnumerable<ServiciosEC.Models.Cliente>
+
+@{
+    ViewData["Title"] = "VerDeshabilitados";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-primary card-outline">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title">Clientes Inactivos</h3>
+            </div>
+            <div class="card-body">
+            
+                <!-- Tabla de clientes -->
+                <div class="table-responsive">
+                    <table id="tablaClientesD" class="table table-bordered table-hover text-nowrap">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Id</th>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Cuit</th>
+                                <th>Domicilio Fiscal</th>
+                                <th>Razon Social</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                             @foreach (var item in Model) 
+                             {
+                                <tr>
+                                    <td>@item.IdPersona</td>
+                                    <td>@item.Nombre</td>
+                                    <td>@item.Apellido</td>
+                                    <td>@item.Cuit</td>
+                                    <td>@item.DomFiscal</td>
+                                    <td>@item.RazonSocial</td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <a asp-action="Edit" asp-route-id="@item.IdPersona" class="btn btn-secondary btn-sm btn-shine">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                             }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script>
+        let idtablaClientesD = new DataTable('#tablaClientesD');
+    </script>
+}
+
+
+<div class="mt-4 ms-3">
+    <button type="button" onclick="window.history.back()" class="btn btn-outline-secondary btn-shine">
+        <i class="fas fa-arrow-left"></i> Volver
+    </button>
+</div>

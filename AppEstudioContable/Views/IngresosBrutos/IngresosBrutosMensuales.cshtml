@@ -1,0 +1,302 @@
+﻿@model AppEstudioContable.Models.IngresosBrutosMensualModel
+
+@{
+    ViewData["Title"] = "Ingresos Brutos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var meses = new[] {
+        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    };
+}
+
+<!-- Titulo -->
+<div class="border border-secondary rounded shadow-sm p-3 mb-4">
+    <h1 class="h4 mb-0 text-dark fw-bold">Ingresos Brutos Mensuales</h1>
+</div>
+
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+            @using (Html.BeginForm("IngresosBrutosMensuales", "IngresosBrutos", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.id)
+
+                <div class="card border border-secondary bg-light shadow-sm rounded">
+                    <div class="card-header bg-info text-white rounded-top">
+                        <h5 class="mb-0">Datos Generales</h5>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Periodo)
+                            @Html.DropDownListFor(m => m.Periodo,
+                            (IEnumerable<SelectListItem>)ViewBag.Periodos,
+                                                "-- Selecciona un mes --",
+                                                new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Periodo, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Anio)
+                        @Html.TextBoxFor(m => m.Anio, new
+                                                {
+                                @class = "form-control",
+                                                type = "number",
+                                                min = "1",
+                                                step = "1"
+                                                })
+                        @Html.ValidationMessageFor(m => m.Anio, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn btn-info px-4 btn-shine">Buscar</button>
+                    </div>
+                </div>
+            </div>
+                        }
+        </div>
+    </div>
+</div>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show animate__animated animate__fadeIn" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+}
+
+@if(Model.Anio!=null && Model.Periodo != null)
+{
+    @if (Model.listaIbMensual.Any())
+    {
+        @* Tabla combinada para exportacion *@
+        <br />
+        <hr class="my-4" />
+        <table id="tablaCombinada" style="display:none;">
+            <thead></thead>
+            <tbody></tbody>
+        </table>
+        <hr class="my-4" />
+        <br />
+        
+        @* Lista Mensual *@
+        <div class="card border-primary mb-4">
+            <div class="card-header bg-light text-white">
+                Detalle Mensual Por Jurisdiccion - @Model.Periodo / @Model.Anio
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table id="listaMensual" class="table table-striped table-bordered mb-0">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Periodo</th>
+                                <th>Año</th>
+                                <th>JurisdiccionId</th>
+                                <th>Coeficiente</th>
+                                <th>Gravado Pais</th>
+                                <th>Gravado Jurisdiccion</th>
+                                <th>Alicuota</th>
+                                <th>Impuesto Determinado</th>
+                                <th>Retenciones</th>
+                                <th>Retenciones Bancarias</th>
+                                <th>Percepciones</th>
+                                <th>Aduaneras</th>
+                                <th>Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.listaIbMensual)
+                            {
+                                <tr>
+                                    <td>@item.Periodo</td>
+                                    <td>@item.Anio</td>
+                                    <td>@item.JurisdiccionId</td>
+                                    <td>@item.Coeficiente</td>
+                                    <td>@((item.GravadoPais ?? 0).ToString("C2"))</td>
+                                    <td>@((item.GravadoJurisdiccion ?? 0).ToString("C2"))</td>
+                                    <td>@item.Alicuota</td>
+                                    <td>@((item.ImpuestoDeterminado ?? 0).ToString("C2"))</td>
+                                    <td>@((item.Retenciones ?? 0).ToString("C2"))</td>
+                                    <td>@((item.RetencionesBancarias ?? 0).ToString("C2"))</td>
+                                    <td>@((item.Percepciones ?? 0).ToString("C2"))</td>
+                                    <td>@((item.Aduaneras ?? 0).ToString("C2"))</td>
+                                    <td>@((item.Saldo ?? 0).ToString("C2"))</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @* Resumen Mensual *@
+        <div class="card border-secondary mb-4">
+            <div class="card-header bg-secondary text-white">
+                Resumen Total Mensual @Model.Periodo / @Model.Anio
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table id="resumenMensual" class="table table-bordered mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Gravado Pais</th>
+                                <th>Gravado Jurisdiccion</th>
+                                <th>Alicuota</th>
+                                <th>Impuesto Determinado</th>
+                                <th>Retenciones</th>
+                                <th>Retenciones Bancarias</th>
+                                <th>Percepciones</th>
+                                <th>Aduaneras</th>
+                                <th>Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@((Model.ResumenMensual.GravadoPais ?? 0).ToString("C2"))</td>
+                                <td>@((Model.ResumenMensual.GravadoJurisdiccion ?? 0).ToString("C2"))</td>
+                                <td>@Model.ResumenMensual.Alicuota</td>
+                                <td>@((Model.ResumenMensual.ImpuestoDeterminado ?? 0).ToString("C2"))</td>
+                                <td>@((Model.ResumenMensual.Retenciones ?? 0).ToString("C2"))</td>
+                                <td>@((Model.ResumenMensual.RetencionesBancarias ?? 0).ToString("C2"))</td>
+                                <td>@((Model.ResumenMensual.Percepciones ?? 0).ToString("C2"))</td>
+                                <td>@((Model.ResumenMensual.Aduaneras ?? 0).ToString("C2"))</td>
+                                <td>@((Model.ResumenMensual.Saldo ?? 0).ToString("C2"))</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    }
+    else
+    {
+        <div class="alert alert-info mt-4">
+            @* No se encontraron ingresos brutos registrados para el período: <strong>@meses[Model.Periodo -1]</strong> / <strong>@Model.Anio</strong>. *@
+            No se encontraron ingresos brutos registrados.
+        </div>
+    }
+}
+
+<div class="mt-4 ms-3">
+    <button type="button" onclick="window.history.back()" class="btn btn-outline-secondary btn-shine">
+        <i class="fas fa-arrow-left"></i> Volver
+    </button>
+</div>
+
+
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            
+            const tablaCombinada = $('#tablaCombinada').DataTable({
+                dom: 'Bfrtip',
+                buttons: ['copy', 'excelHtml5',
+                            {
+                                extend: 'pdfHtml5',
+                                pageSize: 'A4',
+                                customize: function (doc) {
+                                    doc.defaultStyle.fontSize = 6;  
+                                    doc.styles.tableHeader.fontSize = 7;
+                                }
+                            },
+                        'print'],
+                paging: false,
+                searching: false,
+                ordering: false,
+                info: false,
+                columns: [
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                    { title: "" },
+                ]
+            });
+
+
+            tablaCombinada.clear();
+
+            function agregarNombreDeTabla(texto) {
+                tablaCombinada.row.add([texto, '', '', '', '', '', '', '', '', '', '', '', '']);
+            }
+
+            function agregarEncabezado(encabezados) {
+                tablaCombinada.row.add(encabezados);
+            }
+
+            // ---------- Lista Mensual ----------
+            agregarNombreDeTabla('Detalles Mensual');
+            agregarEncabezado(['Año', 'Periodo', 'Jurisdiccion','Coeficiente', 'Gravado Pais',
+                'Gravado Jurisdiccion', 'Alicuota', 'Impuesto Determinado', 'Retenciones',
+                'Retenciones Bancarias', 'Percepciones', 'Aduaneras', 'Saldo']);
+
+
+            $('#listaMensual tbody tr').each(function () {
+                const _periodo = $(this).find('td:eq(0)').text();
+                const _anio = $(this).find('td:eq(1)').text();                
+                const _jurisdiccion = $(this).find('td:eq(2)').text();
+                const _coeficiente = $(this).find('td:eq(3)').text();
+                const _gravadoPais = $(this).find('td:eq(4)').text();
+                const _gravadoJurisdiccion = $(this).find('td:eq(5)').text();
+                const _alicuota = $(this).find('td:eq(6)').text();
+                const _impDeterminado = $(this).find('td:eq(7)').text();
+                const _retenciones = $(this).find('td:eq(8)').text();
+                const _retencionesBancarias = $(this).find('td:eq(9)').text();
+                const _percepciones = $(this).find('td:eq(10)').text();
+                const _aduaneras = $(this).find('td:eq(11)').text();
+                const _saldo = $(this).find('td:eq(12)').text();
+                tablaCombinada.row.add([_anio, _periodo, _jurisdiccion, _coeficiente, _gravadoPais,
+                    _gravadoJurisdiccion, _alicuota, _impDeterminado, _retenciones ,
+                    _retencionesBancarias, _percepciones, _aduaneras, _saldo]);
+            });
+
+            tablaCombinada.row.add(['', '', '', '', '', '', '', '', '', '', '', '', '']);
+            tablaCombinada.row.add(['', '', '', '', '', '', '', '', '', '', '', '', '']);
+
+            // ---------- Resumen Mensual ----------
+            agregarNombreDeTabla('Resumen Mensual');
+            agregarEncabezado(['Año', 'Periodo', 'Jurisdiccion','Coeficiente', 'Gravado Pais',
+                'Gravado Jurisdiccion', 'Alicuota', 'Impuesto Determinado', 'Retenciones',
+                'Retenciones Bancarias', 'Percepciones', 'Aduaneras', 'Saldo']);
+
+
+            $('#resumenMensual tbody tr').each(function () {
+                const _anio = '';
+                const _periodo = '';
+                const _jurisdiccion = '';
+                const _coeficiente = '';
+                const _gravadoPais = $(this).find('td:eq(0)').text();
+                const _gravadoJurisdiccion = $(this).find('td:eq(1)').text();
+                const _alicuota = $(this).find('td:eq(2)').text();
+                const _impDeterminado = $(this).find('td:eq(3)').text();
+                const _retenciones = $(this).find('td:eq(4)').text();
+                const _retencionesBancarias = $(this).find('td:eq(5)').text();
+                const _percepciones = $(this).find('td:eq(6)').text();
+                const _aduaneras = $(this).find('td:eq(7)').text();
+                const _saldo = $(this).find('td:eq(8)').text();
+                tablaCombinada.row.add([_anio, _periodo, _jurisdiccion, _coeficiente, _gravadoPais,
+                    _gravadoJurisdiccion, _alicuota, _impDeterminado, _retenciones ,
+                    _retencionesBancarias, _percepciones, _aduaneras, _saldo]);
+            });
+
+            
+            tablaCombinada.draw();
+        });
+    </script>
+
+
+}

@@ -1,0 +1,83 @@
+﻿@model AppEstudioContable.Models.ClienteModel
+
+@{
+    ViewData["Title"] = "Eliminar Cliente";
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-outline card-danger">
+         
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-trash-alt mr-2"></i>Eliminar Cliente</h3> 
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <h4 class="alert-heading"><i class="fas fa-exclamation-triangle mr-2"></i>¡Advertencia Importante!</h4>
+                    <p class="mb-0">Estás a punto de eliminar al cliente <strong>@Model.Nombre @Model.Apellido</strong> de forma permanente.</p>
+                    <p class="mb-0">Esta acción no se puede deshacer. ¿Estás absolutamente seguro de que deseas continuar?</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <h5 class="mb-3 text-danger"><i class="fas fa-info-circle mr-2"></i>Detalles del Cliente a Eliminar:</h5>
+                <hr class="mb-3" />
+
+                <dl class="row">
+                    <dt class="col-sm-3 text-dark font-weight-bold">Nombre:</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Nombre)</dd>
+
+                    <dt class="col-sm-3 text-dark font-weight-bold">Apellido:</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Apellido)</dd>
+
+                    <dt class="col-sm-3 text-dark font-weight-bold">DNI:</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Dni)</dd>
+
+                    <dt class="col-sm-3 text-dark font-weight-bold">CUIT:</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Cuit)</dd>
+
+                    <dt class="col-sm-3 text-dark font-weight-bold">Razón Social:</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.RazonSocial)</dd>
+
+                    <dt class="col-sm-3 text-dark font-weight-bold">Domicilio Fiscal:</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.DomFiscal)</dd>
+
+                    <dt class="col-sm-3 text-dark font-weight-bold">Email:</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Email)</dd>
+
+                    @if (Model.Fecha.HasValue)
+                    {
+                        <dt class="col-sm-3 text-dark font-weight-bold">Fecha de Registro:</dt>
+                        <dd class="col-sm-9">@Html.DisplayFor(model => model.Fecha)</dd>
+                    }
+                </dl>
+
+                <form asp-action="Delete" method="post" class="mt-4 border-top pt-3">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="id" />
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary btn-lg btn-shine">
+                            <i class="fas fa-arrow-left mr-1"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-danger btn-lg btn-shine">
+                           
+                            <i class="fas fa-trash-alt mr-1"></i> Sí, Eliminar Permanentemente
+                        </button>
+     
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+  
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

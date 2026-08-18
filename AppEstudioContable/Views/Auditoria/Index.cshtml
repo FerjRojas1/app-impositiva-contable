@@ -1,0 +1,62 @@
+﻿@model IEnumerable<ServiciosEC.Models.Auditoria>
+
+@{
+    ViewData["Title"] = "Actividad";
+}
+
+<h1>Index</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Tabla)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Accion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Fecha)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DatosAntes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DatosDespues)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Persona.Nombre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Persona.Apellido)
+            </th>            
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Tabla)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Accion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fecha)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DatosAntes)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DatosDespues)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Persona.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Persona.Apellido)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

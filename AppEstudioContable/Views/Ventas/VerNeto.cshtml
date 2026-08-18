@@ -1,0 +1,17 @@
+﻿@model AppEstudioContable.Models.VerNetoViewModel
+
+@{
+    ViewData["Title"] = " Neto Gravado";
+}
+@{
+    string nombreMes = new DateTime(Model.Año, Model.Mes, 1).ToString("MMMM", new System.Globalization.CultureInfo("es-ES"));
+}
+
+<h2>Detalle Neto Gravado - @nombreMes/@Model.Año</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Neto Gravado</th>
+        <td>@Model.NetoGravado.ToString("C")</td> <!-- Formato moneda -->
+    </tr>
+</table>

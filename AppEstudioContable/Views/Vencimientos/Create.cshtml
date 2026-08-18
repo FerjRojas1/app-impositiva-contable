@@ -1,0 +1,58 @@
+﻿@{
+    ViewData["Title"] = "Cargar Vencimientos por Terminación";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <h1 class="text-muted">Cargar Vencimientos por Terminación de CUIT</h1>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="card card-lightblue">
+            <div class="card-header">
+                <h3 class="card-title">Formulario vencimiento</h3>
+            </div>
+            <div class="card-body">
+
+                @using (Html.BeginForm("Create", "Vencimientos", FormMethod.Post))
+                {
+                    
+                    <div class="form-group">
+                        <label>Periodo (MM/YYYY)</label>
+                        @Html.TextBox("Periodo", null, new { @class = "form-control", placeholder = "Ej: 06/2025" })
+                    </div>
+
+                    
+                    <div class="form-group">
+                        <label>Impuesto</label>
+                        @Html.DropDownList("Impuesto", (IEnumerable<SelectListItem>)ViewBag.Impuestos, "Seleccione", new { @class = "form-control" })
+                    </div>
+
+                    <hr />
+
+                    
+                    <label class="font-weight-bold">Fechas de vencimiento por terminación de CUIT</label>
+                    @for (int i = 0; i <= 9; i++)
+                    {
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Terminación @i:</label>
+                            <div class="col-sm-4">
+                                <input type="date" name="Vencimiento_@i" class="form-control" />
+                            </div>
+                        </div>
+                    }
+
+                    
+                    <button type="submit" class="btn btn-info mt-3 btn-shine">Guardar</button> 
+                   
+                    <a href="@Url.Action("Index", "Vencimientos")" class="btn btn-secondary mt-3 ml-2 btn-shine">Cancelar</a>
+                }
+            </div>
+        </div>
+
+    </div>
+</section>

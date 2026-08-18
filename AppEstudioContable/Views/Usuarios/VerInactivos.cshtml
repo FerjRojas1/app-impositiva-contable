@@ -1,0 +1,67 @@
+﻿@model IEnumerable<ServiciosEC.Models.Usuario>
+
+@{
+    ViewData["Title"] = "VerDeshabilitados";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-primary card-outline">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title">Usuarios Inactivos</h3>
+            </div>
+            <div class="card-body">
+            
+                <!-- Tabla de usuarios -->
+                <div class="table-responsive">
+                    <table id="tablaUsuarios" class="table table-bordered table-hover text-nowrap">
+                        <thead class="table-light text-center">
+                            <tr>
+                                <th>Id</th>
+                                <th>Nombre de Usuario</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lista-usuarios">
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="text-center">@item.IdPersona</td>
+                                    <td>@item.NombreUsuario</td>
+                                    <td>@item.Email</td>
+                                    <td>@item.Rol.Descripcion</td>
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-sm" role="group" aria-label="Acciones de usuario">
+
+                                            <a asp-action="Edit" asp-route-id="@item.IdPersona" class="btn btn-outline-warning btn-shine" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Details" asp-route-id="@item.IdPersona" class="btn btn-outline-info btn-shine" title="Detalles">
+                                                <i class="fas fa-info-circle"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script>
+        let tablaUsuarios = new DataTable('#tablaUsuarios');
+    </script>
+}
+
+
+<div class="mt-4 ms-3">
+    <button type="button" onclick="window.history.back()" class="btn btn-outline-secondary btn-shine">
+        <i class="fas fa-arrow-left"></i> Volver
+    </button>
+</div>

@@ -1,0 +1,138 @@
+﻿@model ServiciosEC.Utilidades.ModelosDTO.LibroIvaModel
+
+<div class="container my-4">
+    <form asp-controller="IVA" asp-action="GuardarPeriodo" method="post" id="form-libroIva">
+
+
+    
+        <h4 class="text-center fw-semibold mb-4">Determinación del impuesto | @Model.Mes/@Model.Año</h4>
+
+        <div class="text-right mb-3" id="no-print">
+            <a class="btn btn-outline-info btn-sm px-3 py-2" href="#" onclick="window.print();">
+                <i class="fas fa-print mr-1"></i> Imprimir
+            </a>
+        </div>
+  
+        <div class="card border-0 shadow-sm mb-4" style="background-color: #e6f0f8;">
+            <div class="card-body">
+                <div class="mb-4 text-center fw-bold text-dark">Resumen Fiscal del Período</div>
+
+                <div class="row mb-3">
+                    <div class="col-md-9 fw-semibold text-info">Total del débito fiscal del período</div>
+                    <div class="col-md-3 text-end fw-bold text-info" id="totalDeb" data-value="@Model.IVADebitoFiscal">@Model.IVADebitoFiscal.ToString("C")</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-9 fw-semibold text-info">Total del crédito fiscal del período</div>
+                    <div class="col-md-3 text-end fw-bold text-info" id="totalCred" data-value="@Model.IVACreditoFiscal">@Model.IVACreditoFiscal.ToString("C")</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-9">Saldo técnico a favor del contribuyente del período anterior</div>
+                    <div class="col-md-3">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">$</span>
+                            </div>
+                            <input type="text" name="SaldoTecnicoAnterior" class="form-control text-end" value="@Model.SaldoTecnicoAnterior.ToString("F2")" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-9">Saldo TÉCNICO</div>
+                    <div class="col-md-3 text-end fw-semibold" id="saldoTec">@Model.SaldoTecnico.ToString("C")</div>
+                </div>
+            </div>
+        </div>
+
+    
+        <div class="card border-0 shadow-sm mb-4" style="background-color: #f5f5f5;">
+            <div class="card-body">
+                <div class="card-body">
+                <div class="mb-4 text-center fw-bold text-dark">Determinación de la posición mensual</div>
+
+                <div class="row mb-3">
+                        <div class="col-md-9 fw-semibold text-secondary">Saldo TÉCNICO</div>
+                    <div class="col-md-3 text-end fw-bold text-secondary" id="saldoTec2">@Model.SaldoTecnico.ToString("C")</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-9">Saldo a favor de libre disponibilidad del período anterior neto de usos</div>
+                    <div class="col-md-3">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">$</span>
+                            </div>
+                            <input type="text" name="SaldoLibreDisponibilidad" class="form-control text-end" value="@Model.SaldoLibreDisponibilidad.ToString("F2")" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-9">Total retenciones y percepciones en el período</div>
+                    <div class="col-md-3">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">$</span>
+                            </div>
+                            <input type="text" name="RetencionesPercepciones" class="form-control text-end" value="@((Model.RetencionesIVA + Model.PercepcionesIVA).ToString("F2"))" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-9">Saldo NETO</div>
+                    <div class="col-md-3 text-end fw-semibold" id="saldoDisp">@Model.SaldoTecnicoNeto.ToString("C")</div>
+                </div>
+            </div>
+        </div>
+
+    
+        <div class="d-flex justify-content-between mt-3">
+            <a asp-controller="IVA"
+               asp-action="DetailsPeriodo"
+               asp-route-cuit="@Model.Cuit"
+               asp-route-mes="@Model.Mes"
+               asp-route-año="@Model.Año"
+               class="btn btn-outline-secondary">
+                 Volver
+            </a>
+
+
+                <input type="hidden" name="Cuit" value="@Model.Cuit" />
+                <input type="hidden" name="Mes" value="@Model.Mes" />
+                <input type="hidden" name="Año" value="@Model.Año" />
+            <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#dialogoLibroIva">Guardar Resumen</button>
+        </div>
+    </form>
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="dialogoLibroIva" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Libro IVA</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <span id="modalIvaTexto">Cargando...</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script src="~/js/guardarIva.js" ></script>
+}
+

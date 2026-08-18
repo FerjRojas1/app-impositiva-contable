@@ -1,0 +1,89 @@
+﻿@{
+    ViewData["Title"] = "Vencimientos";
+    
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <h1 class="text-muted">Vencimientos</h1>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="mb-3">
+            <a href="@Url.Action("Create", "Vencimientos")" class="btn btn-success btn-shine">
+                <i class="fas fa-plus"></i> Cargar Vencimiento
+            </a>
+        </div>
+
+        <div class="card card-gray">
+            <div class="card-header">
+                <h3 class="card-title">Filtros de búsqueda</h3>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("Vencimiento", "TuControlador", FormMethod.Get))
+                {
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label>Cliente</label>
+                            @Html.TextBox("cliente", null, new { @class = "form-control", placeholder = "Ingrese nombre o CUIT" })
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Mes</label>
+                            @Html.DropDownList("mes", new SelectList(ViewBag.Meses, "Value", "Text"), "Seleccione", new { @class = "form-control" })
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Año</label>
+                            @Html.TextBox("anio", null, new { @class = "form-control", placeholder = "Ej: 2025" })
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>Impuesto</label>
+                            @Html.DropDownList("impuesto", (IEnumerable<SelectListItem>)ViewBag.Impuestos, "Seleccione", new { @class = "form-control" })
+                        </div>
+                        
+                    </div>
+                    <button type="submit" class="btn btn-info btn-shine">Buscar</button>
+                }
+            </div>
+        </div>
+
+        <div class="card card-lightblue">
+            <div class="card-header">
+                <h3 class="card-title">Resultados</h3>
+            </div>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-hover text-nowrap">
+                    <thead class="text-center">
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Periodo</th>
+                            <th>Tipo</th>
+                            <th>Vencimiento</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr class="text-center">
+                            <td>Juan Pérez</td>
+                            <td>05/2025</td>
+                            <td>IVA</td>
+                            <td>20/06/2025</td>
+                            
+                        </tr>
+                        <tr class="text-center">
+                            <td>Ana López</td>
+                            <td>05/2025</td>
+                            <td>Ingresos Brutos</td>
+                            <td>25/06/2025</td>
+                            
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
